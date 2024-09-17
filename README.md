@@ -1,5 +1,7 @@
 # launchrail
 
+[![Build and Test](https://github.com/theadambyrne/launchrail/actions/workflows/build_test.yml/badge.svg?branch=main)](https://github.com/theadambyrne/launchrail/actions/workflows/build_test.yml)
+
 Experimenting with the idea of creating a 6-DOF High Power Rocketry simulator. This is a work in progress and is not yet functional.
 
 ## Status
