@@ -17,18 +17,23 @@ pub struct Rocket {
 }
 
 impl Rocket {
-    pub fn new(mass: f64, motor: SolidMotor, parachutes: Vec<Parachute>) -> Self {
+    pub fn new(
+        mass: f64,
+        motor: SolidMotor,
+        parachutes: Vec<Parachute>,
+        drag_coefficient: f64,
+        reference_area: f64,
+    ) -> Rocket {
         Rocket {
-            mass: mass,
-            parachutes: parachutes,
+            mass,
+            parachutes,
             position: na::Vector3::new(0.0, 0.0, 0.0),
             velocity: na::Vector3::new(0.0, 0.0, 0.0),
-            orientation: na::UnitQuaternion::from_euler_angles(0.0, 0.1, 0.0),
+            orientation: na::UnitQuaternion::from_euler_angles(0.0, 0.0, 0.0),
             angular_velocity: na::Vector3::new(0.0, 0.0, 0.0),
-            drag_coefficient: 0.5 * 1.225 * 0.1 * 0.1,
-            // NOTE: 5.589E+04 = 0.5 * 1.225 * 0.1 * 0.1
-            reference_area: 0.1,
-            motor: motor,
+            drag_coefficient,
+            reference_area,
+            motor,
         }
     }
     pub fn deploy_parachutes(&mut self, trigger: bool) {

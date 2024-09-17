@@ -29,7 +29,7 @@ impl SimulationState {
         let velocity_relative_to_air = self.rocket.velocity - self.environment.wind_velocity;
         let velocity_magnitude = velocity_relative_to_air.magnitude();
         let drag_direction = -velocity_relative_to_air.normalize();
-        let drag = 0.5
+        let drag = 0.5 // 0.5 * rho * v^2 * Cd * A
             * self.environment.air_density
             * velocity_magnitude.powi(2)
             * self.rocket.drag_coefficient
@@ -75,7 +75,6 @@ impl SimulationState {
         // Parachute deployment logic
         let apogee_reached = self.rocket.velocity.z <= 0.0;
         self.rocket.deploy_parachutes(apogee_reached);
-        let forces = self.calculate_forces();
 
         // Ground collision check
         if self.rocket.position.z < 0.0 {

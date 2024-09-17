@@ -25,9 +25,18 @@ fn main() -> std::io::Result<()> {
     let drogue_parachute = Parachute::new(DeploymentConfig::Apogee, 0.8);
     let main_parachute = Parachute::new(DeploymentConfig::Altitude(450.0, false), 0.8);
 
+    let reference_area = 0.00933131557; // NOTE: RA = π * (D/2)^2 (at largest diameter D)
+    let drag_coefficient = 0.006125; // NOTE: 5.589E+04 = 0.5 * 1.225 * 0.1 * 0.1
+
     let mut state = SimulationState {
         time: 0.0,
-        rocket: Rocket::new(9.0, solid_motor, vec![main_parachute, drogue_parachute]),
+        rocket: Rocket::new(
+            9.0,
+            solid_motor,
+            vec![main_parachute, drogue_parachute],
+            drag_coefficient,
+            reference_area,
+        ),
         environment: Environment {
             gravity: na::Vector3::new(0.0, 0.0, -9.81),
             air_density: 1.225,
