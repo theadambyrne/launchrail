@@ -36,23 +36,19 @@ impl Rocket {
             motor,
         }
     }
-    pub fn deploy_parachutes(&mut self, trigger: bool) {
+    pub fn deploy_parachutes(&mut self) {
         for parachute in &mut self.parachutes {
             match parachute.deployment_config {
                 DeploymentConfig::Apogee => {
-                    if trigger
-                        && !parachute.deployed
-                        && self.velocity.z <= 0.0
-                        && self.position.z >= 0.0
-                    {
+                    if !parachute.deployed && self.velocity.z <= 0.0 && self.position.z >= 0.0 {
                         parachute.deploy();
                     }
                 }
-                DeploymentConfig::Altitude(altitude, rising) => {
-                    if self.position.z == altitude && !parachute.deployed {
-                        if (self.velocity.z > 0.0) == rising {
-                            parachute.deploy();
-                        }
+                DeploymentConfig::Altitude(altitude) => {
+                    // NOTE: deploy para at the altitude if descending
+                    if !parachute.deployed && self.velocity.z <= 0.0 && self.position.z <= altitude
+                    {
+                        parachute.deploy();
                     }
                 }
             }

@@ -1,6 +1,9 @@
+use log::debug;
+
+#[derive(Debug)]
 pub enum DeploymentConfig {
     Apogee,
-    Altitude(f64, bool), // NOTE: metres, up/down (true/false)
+    Altitude(f64), // NOTE: metres, up/down (true/false)
 }
 
 pub struct Parachute {
@@ -20,5 +23,6 @@ impl Parachute {
 
     pub fn deploy(&mut self) {
         self.deployed = true;
+        debug!("Parachute deployed at event: {:?}", self.deployment_config);
     }
 }

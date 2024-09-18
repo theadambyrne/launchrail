@@ -1,3 +1,5 @@
+.env
+.env.sample
 .DS_Store
 /target
 /outputs/*.csv

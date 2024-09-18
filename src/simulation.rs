@@ -14,11 +14,10 @@ pub struct SimulationState {
 }
 
 impl SimulationState {
-    // Calculate forces acting on the rocket (gravity, thrust, and drag)
     pub fn calculate_forces(&self) -> na::Vector3<f64> {
         let gravity = self.environment.gravity * self.rocket.mass;
 
-        // Thrust logic based on burn time of the solid motor
+        // NOTE: Thrust logic based on burn time of the solid motor
         let thrust = if self.time < self.rocket.motor.burn_time {
             self.rocket.orientation
                 * na::Vector3::new(0.0, 0.0, self.rocket.motor.thrust_at(self.time))
@@ -29,7 +28,7 @@ impl SimulationState {
         let velocity_relative_to_air = self.rocket.velocity - self.environment.wind_velocity;
         let velocity_magnitude = velocity_relative_to_air.magnitude();
         let drag_direction = -velocity_relative_to_air.normalize();
-        let drag = 0.5 // 0.5 * rho * v^2 * Cd * A
+        let drag = 0.5 // NOTE:  0.5 * rho * v^2 * Cd * A
             * self.environment.air_density
             * velocity_magnitude.powi(2)
             * self.rocket.drag_coefficient
@@ -56,37 +55,31 @@ impl SimulationState {
         gravity + thrust + drag + parachute_drag
     }
 
-    // Simulate one step of the simulation
     pub fn simulate_step(&mut self, dt: f64) {
         let forces = self.calculate_forces();
 
-        // Update linear motion
+        // NOTE: Update linear motion
         let acceleration = forces / self.rocket.mass;
         self.rocket.velocity += acceleration * dt;
         self.rocket.position += self.rocket.velocity * dt;
 
-        // Update angular velocity and orientation (placeholder for angular acceleration)
-        let angular_acceleration = na::Vector3::new(0.0, 0.0, 0.0); // Placeholder for angular acceleration
+        // NOTE: Update angular velocity and orientation (placeholder for angular acceleration)
+        let angular_acceleration = na::Vector3::new(0.0, 0.0, 0.0); // HACK: Placeholder for angular acceleration
         self.rocket.angular_velocity += angular_acceleration * dt;
         let delta_orientation =
             na::UnitQuaternion::from_scaled_axis(self.rocket.angular_velocity * dt);
         self.rocket.orientation = delta_orientation * self.rocket.orientation;
 
-        // Parachute deployment logic
-        let apogee_reached = self.rocket.velocity.z <= 0.0;
-        self.rocket.deploy_parachutes(apogee_reached);
+        self.rocket.deploy_parachutes(); // INFO: Checks done within
 
-        // Ground collision check
+        // NOTE: Ground collision check
         if self.rocket.position.z < 0.0 {
             self.rocket.position.z = 0.0;
-            if self.rocket.velocity.z < 0.0 {
-                self.rocket.velocity.z = -self.rocket.velocity.z * 0.5;
-                self.rocket.velocity.x *= 0.9;
-                self.rocket.velocity.y *= 0.9;
-            }
+
+            // HACK: Stop rocket at the ground (it got stuck in the ground)
+            self.rocket.velocity = na::Vector3::zeros();
         }
 
-        // Update time
         self.time += dt;
     }
 }
