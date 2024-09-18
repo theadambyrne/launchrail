@@ -1,3 +1,4 @@
+mod logger;
 mod parachute;
 mod rocket;
 mod simulation;
@@ -7,9 +8,7 @@ mod thrust_curve;
 use std::fs::File;
 use std::io::Write;
 
-use chrono::Local;
-use env_logger::Builder;
-use log::{debug, info, warn, LevelFilter};
+use log::{debug, info, warn};
 use nalgebra as na;
 use rand::Rng;
 
@@ -19,19 +18,7 @@ use simulation::{Environment, SimulationState};
 use solid_motor::SolidMotor;
 
 fn main() -> std::io::Result<()> {
-    Builder::new()
-        .format(|buf, record| {
-            writeln!(
-                buf,
-                "{} [{}] {}",
-                Local::now().format("%Y-%m-%dT%H:%M:%S"),
-                record.level(),
-                record.args()
-            )
-        })
-        .filter(None, LevelFilter::Debug)
-        .write_style(env_logger::WriteStyle::Auto)
-        .init();
+    logger::init_logger();
 
     let mut rng = rand::thread_rng();
     let angle = rng.gen_range(0.0..2.0 * std::f64::consts::PI);
